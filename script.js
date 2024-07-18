@@ -8,8 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('shuffleButton').addEventListener('click', function() {
         let input = document.getElementById('namesInput').value;
         let cleanedInput = cleanNames(input);
-        localStorage.setItem('savedNames', cleanedInput);
-        updateRanking(cleanedInput);
+        let shuffledNames = shuffleArray(cleanedInput.split('\n'));
+        let finalInput = shuffledNames.join('\n');
+        localStorage.setItem('savedNames', finalInput);
+        updateRanking(finalInput);
     });
 
     document.getElementById('validateButton').addEventListener('click', function() {
@@ -31,6 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function cleanNames(input) {
     return input.split(/[\n,]+/).map(name => name.replace(/[^a-zA-Zá-úÁ-Ú ]/g, '').trim()).filter(name => name !== "").join('\n');
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
 function updateRanking(input) {
