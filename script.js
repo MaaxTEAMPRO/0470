@@ -29,6 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('validationResult').style.color = "red";
         }
     });
+
+    document.getElementById('copyButton').addEventListener('click', function() {
+        let resultList = document.getElementById('resultList').innerText;
+        let validationCode = document.querySelector('.time-line').innerText.split(': ')[1];
+        let copyText = `${resultList}\n> ${validationCode}`;
+        copyToClipboard(copyText);
+        alert('Ranking e código de validação copiados!');
+    });
 });
 
 function cleanNames(input) {
@@ -44,7 +52,7 @@ function shuffleArray(array) {
 }
 
 function updateRanking(input) {
-    let names = input.split(/[\n,]+/).map(name => name.trim()).filter(name => name !== "");
+    let names = input.split('\n').map(name => name.trim()).filter(name => name !== "");
     let resultList = document.getElementById('resultList');
     resultList.innerHTML = '';
 
@@ -66,7 +74,7 @@ function updateRanking(input) {
 }
 
 function encodeNames(names) {
-    return names.map(name => btoa(name)).join('-');
+    return CryptoJS.MD5(names.join(',')).toString();
 }
 
 function cleanCode(code) {
@@ -74,18 +82,7 @@ function cleanCode(code) {
 }
 
 function generateValidationCode(names) {
-    let randomStart = Math.floor(Math.random() * (450000 - 430000 + 1)) + 430000;
-    let randomEnd = Math.floor(Math.random() * (811000 - 800000 + 1)) + 800000;
-
-    let encodedNames = encodeNames(names);
-    let validationCode = `${randomStart}-${encodedNames}-${randomEnd}`;
-    
-    return addNoise(validationCode);
-}
-
-function addNoise(code) {
-    let noise = '!?@#';
-    return code.split('').map(char => Math.random() < 0.1 ? noise[Math.floor(Math.random() * noise.length)] : char).join('');
+    return encodeNames(names);
 }
 
 function getOrdinal(number) {
@@ -102,3 +99,12 @@ function formatDate(date) {
     let year = date.getFullYear();
     return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
 }
+
+function copyToClipboard(text) {
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = text;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempTextArea);
+        }
